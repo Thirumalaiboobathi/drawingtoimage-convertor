@@ -1,0 +1,13 @@
+
+@media (max-width: 767px) { 
+    canvas {
+      width: 200px;
+    }
+  }
+  
+  @media (min-width: 768px) { 
+    canvas {
+      width: 800px;
+    }
+  }
+  
