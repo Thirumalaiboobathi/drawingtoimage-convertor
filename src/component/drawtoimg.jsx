@@ -8,13 +8,20 @@ const DrawingCanvas = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    // eslint-disable-next-line
     const ctx = canvas.getContext('2d');
+
+    // Set the initial background color
+    ctx.fillStyle = '#ffffff'; // Set to white
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const resizeCanvas = () => {
       const rect = canvas.getBoundingClientRect();
       canvas.width = rect.width;
       canvas.height = rect.height;
+
+      // Set the background color when resizing
+      ctx.fillStyle = '#ffffff'; // Set to white
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
     };
 
     resizeCanvas();
@@ -36,6 +43,8 @@ const DrawingCanvas = () => {
   const handleStart = (event) => {
     const { x, y } = getPosition(event);
     const ctx = canvasRef.current.getContext('2d');
+
+    // Begin drawing
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.strokeStyle = currentColor;
@@ -85,6 +94,10 @@ const DrawingCanvas = () => {
     handleEnd();
   };
 
+  const handleColorChange = (event) => {
+    setCurrentColor(event.target.value);
+  };
+
   const handleDownload = () => {
     const canvas = canvasRef.current;
     const dataURL = canvas.toDataURL('image/png');
@@ -99,10 +112,6 @@ const DrawingCanvas = () => {
   const handleClearCanvas = () => {
     const ctx = canvasRef.current.getContext('2d');
     ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-  };
-
-  const handleColorChange = (event) => {
-    setCurrentColor(event.target.value);
   };
 
   return (
