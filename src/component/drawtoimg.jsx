@@ -1,19 +1,48 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './drawtoimg.css';
 
 const DrawingCanvas = () => {
   const canvasRef = useRef(null);
-  const [currentColor, setCurrentColor] = useState('#000000'); // Default color is black
+  const [currentColor, setCurrentColor] = useState('#000000');
 
-  const handleStart = (x, y) => {
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    // eslint-disable-next-line
+    const ctx = canvas.getContext('2d');
+
+    const resizeCanvas = () => {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    };
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+    };
+  }, []);
+
+  const getPosition = (event) => {
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    return { x, y };
+  };
+
+  const handleStart = (event) => {
+    const { x, y } = getPosition(event);
     const ctx = canvasRef.current.getContext('2d');
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.strokeStyle = currentColor;
   };
 
-  const handleMove = (x, y) => {
+  const handleMove = (event) => {
+    const { x, y } = getPosition(event);
     const ctx = canvasRef.current.getContext('2d');
     ctx.lineTo(x, y);
     ctx.stroke();
@@ -25,32 +54,31 @@ const DrawingCanvas = () => {
   };
 
   const handleMouseDown = (event) => {
-    const { offsetX, offsetY } = event.nativeEvent;
-    handleStart(offsetX, offsetY);
+    handleStart(event);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
   };
 
   const handleMouseMove = (event) => {
-    if (!event.buttons) return;
-    const { offsetX, offsetY } = event.nativeEvent;
-    handleMove(offsetX, offsetY);
+    handleMove(event);
   };
 
   const handleMouseUp = () => {
     handleEnd();
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
   };
 
   const handleTouchStart = (event) => {
+    event.preventDefault();
     const touch = event.touches[0];
-    const { clientX, clientY } = touch;
-    handleStart(clientX, clientY);
+    handleStart(touch);
   };
 
   const handleTouchMove = (event) => {
-    if (event.touches.length !== 1) return;
     event.preventDefault();
     const touch = event.touches[0];
-    const { clientX, clientY } = touch;
-    handleMove(clientX, clientY);
+    handleMove(touch);
   };
 
   const handleTouchEnd = () => {
@@ -88,16 +116,12 @@ const DrawingCanvas = () => {
             <div className="col-12 col-md-8">
               <canvas
                 ref={canvasRef}
-                width={800}
-                height={600}
                 onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
                 className="border border-dark"
-                style={{ width: '100%' }}
+                style={{ width: '100%', touchAction: 'none' }}
               />
             </div>
             <div className="col-md-4 d-flex flex-column align-items-center">
