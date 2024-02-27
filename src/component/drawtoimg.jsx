@@ -4,26 +4,51 @@ import './drawtoimg.css';
 
 const DrawingCanvas = () => {
   const canvasRef = useRef(null);
-  // eslint-disable-next-line
-  const [imageData, setImageData] = useState(null);
   const [currentColor, setCurrentColor] = useState('#000000'); // Default color is black
 
   const handleMouseDown = (event) => {
-    const ctx = canvasRef.current.getContext('2d');
-    ctx.beginPath();
-    ctx.moveTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
-    ctx.strokeStyle = currentColor; 
+    startDrawing(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
   };
 
   const handleMouseMove = (event) => {
     if (!event.buttons) return;
-
-    const ctx = canvasRef.current.getContext('2d');
-    ctx.lineTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
-    ctx.stroke();
+    continueDrawing(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
   };
 
   const handleMouseUp = () => {
+    endDrawing();
+  };
+
+  const handleTouchStart = (event) => {
+    const touch = event.touches[0];
+    startDrawing(touch.clientX, touch.clientY);
+  };
+
+  const handleTouchMove = (event) => {
+    if (event.touches.length !== 1) return;
+    event.preventDefault();
+    const touch = event.touches[0];
+    continueDrawing(touch.clientX, touch.clientY);
+  };
+
+  const handleTouchEnd = () => {
+    endDrawing();
+  };
+
+  const startDrawing = (x, y) => {
+    const ctx = canvasRef.current.getContext('2d');
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.strokeStyle = currentColor;
+  };
+
+  const continueDrawing = (x, y) => {
+    const ctx = canvasRef.current.getContext('2d');
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  };
+
+  const endDrawing = () => {
     const ctx = canvasRef.current.getContext('2d');
     ctx.closePath();
   };
@@ -42,7 +67,6 @@ const DrawingCanvas = () => {
   const handleClearCanvas = () => {
     const ctx = canvasRef.current.getContext('2d');
     ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-    setImageData(null);
   };
 
   const handleColorChange = (event) => {
@@ -52,25 +76,26 @@ const DrawingCanvas = () => {
   return (
     <div className="container mt-5">
       <div className="card">
-      <div className="card-header text-white" style={{ background: 'linear-gradient(90deg, #00c4cc, #7d2ae8)' }}>
+        <div className="card-header text-white" style={{ background: 'linear-gradient(90deg, #00c4cc, #7d2ae8)' }}>
           <h2 className="text-center mb-0">Artistry Canvas Studio</h2>
         </div>
         <div className="card-body">
           <div className="row">
-          <div className="col-12 col-md-8">
-            <canvas
-              ref={canvasRef}
-              width={800}
-              height={600}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              className="border border-dark"
-              style={{ width: '100%' }} // Ensure the canvas takes up 100% width initially
-            />
-          </div>
-
-
+            <div className="col-12 col-md-8">
+              <canvas
+                ref={canvasRef}
+                width={800}
+                height={600}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                className="border border-dark"
+                style={{ width: '100%' }}
+              />
+            </div>
             <div className="col-md-4 d-flex flex-column align-items-center">
               <div className="mb-3">
                 <h5 className="form-label attractive-label">Choose Color</h5>
