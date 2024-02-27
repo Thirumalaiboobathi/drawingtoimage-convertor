@@ -6,51 +6,55 @@ const DrawingCanvas = () => {
   const canvasRef = useRef(null);
   const [currentColor, setCurrentColor] = useState('#000000'); // Default color is black
 
-  const handleMouseDown = (event) => {
-    startDrawing(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
-  };
-
-  const handleMouseMove = (event) => {
-    if (!event.buttons) return;
-    continueDrawing(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
-  };
-
-  const handleMouseUp = () => {
-    endDrawing();
-  };
-
-  const handleTouchStart = (event) => {
-    const touch = event.touches[0];
-    startDrawing(touch.clientX, touch.clientY);
-  };
-
-  const handleTouchMove = (event) => {
-    if (event.touches.length !== 1) return;
-    event.preventDefault();
-    const touch = event.touches[0];
-    continueDrawing(touch.clientX, touch.clientY);
-  };
-
-  const handleTouchEnd = () => {
-    endDrawing();
-  };
-
-  const startDrawing = (x, y) => {
+  const handleStart = (x, y) => {
     const ctx = canvasRef.current.getContext('2d');
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.strokeStyle = currentColor;
   };
 
-  const continueDrawing = (x, y) => {
+  const handleMove = (x, y) => {
     const ctx = canvasRef.current.getContext('2d');
     ctx.lineTo(x, y);
     ctx.stroke();
   };
 
-  const endDrawing = () => {
+  const handleEnd = () => {
     const ctx = canvasRef.current.getContext('2d');
     ctx.closePath();
+  };
+
+  const handleMouseDown = (event) => {
+    const { offsetX, offsetY } = event.nativeEvent;
+    handleStart(offsetX, offsetY);
+  };
+
+  const handleMouseMove = (event) => {
+    if (!event.buttons) return;
+    const { offsetX, offsetY } = event.nativeEvent;
+    handleMove(offsetX, offsetY);
+  };
+
+  const handleMouseUp = () => {
+    handleEnd();
+  };
+
+  const handleTouchStart = (event) => {
+    const touch = event.touches[0];
+    const { clientX, clientY } = touch;
+    handleStart(clientX, clientY);
+  };
+
+  const handleTouchMove = (event) => {
+    if (event.touches.length !== 1) return;
+    event.preventDefault();
+    const touch = event.touches[0];
+    const { clientX, clientY } = touch;
+    handleMove(clientX, clientY);
+  };
+
+  const handleTouchEnd = () => {
+    handleEnd();
   };
 
   const handleDownload = () => {
