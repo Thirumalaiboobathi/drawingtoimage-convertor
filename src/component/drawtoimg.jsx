@@ -109,7 +109,7 @@ const DrawingCanvas = () => {
     <div className="container mt-5">
       <div className="card">
         <div className="card-header text-white" style={{ background: 'linear-gradient(90deg, #00c4cc, #7d2ae8)' }}>
-          <h2 className="text-center mb-0">Artistry Canvas Studio</h2>
+          <h2 className="text-center mb-0">Unleash Your Inner Artist</h2>
         </div>
         <div className="card-body">
           <div className="row">
