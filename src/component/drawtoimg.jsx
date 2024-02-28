@@ -19,8 +19,7 @@ const DrawingCanvas = () => {
       canvas.width = rect.width;
       canvas.height = rect.height;
 
-      // Set the background color when resizing
-      ctx.fillStyle = '#ffffff'; // Set to white
+      ctx.fillStyle = '#ffffff'; 
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     };
 
@@ -118,7 +117,7 @@ const DrawingCanvas = () => {
     <div className="container mt-5">
       <div className="card">
         <div className="card-header text-white" style={{ background: 'linear-gradient(90deg, #00c4cc, #7d2ae8)' }}>
-          <h2 className="text-center mb-0">Unleash Your Inner Artist</h2>
+          <h2 className="text-center mb-0">DrawIt</h2>
         </div>
         <div className="card-body">
           <div className="row">
